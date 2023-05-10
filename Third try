@@ -1,0 +1,480 @@
+var currentScene=0;
+    var bitmojiX=200;
+    var bitmojiY=200;
+    var score=0;
+    var startTime;
+     background(25, 25, 112);
+
+var questions = [
+  { question1 : "Is the capital of Australia Sydney?", answer: "No" },
+  { question: "Is the Great Wall of China visible from space?", answer: "No" },
+  { question: "Did Leonardo da Vinci paint the Mona Lisa?", answer: "Yes" },
+  { question: "Is the Nile River the longest river in the world?", answer: "Yes" },
+  { question: "Did Neil Armstrong walk on the moon in 1969?", answer: "Yes" },
+  { question: "Is the human brain the largest organ in the body?", answer: "No" },
+  { question: "Did William Shakespeare write 'Romeo and Juliet'?", answer: "Yes" },
+  { question: "Is the Statue of Liberty located in New York City?", answer: "Yes" },
+  { question: "Did Alexander Graham Bell invent the telephone?", answer: "Yes" },
+  { question: "Is the Eiffel Tower located in Rome?", answer: "No" },
+  { question: "Did Christopher Columbus discover America?", answer: "No" },
+  { question: "Is the Earth the third planet from the sun?", answer: "Yes" },
+  { question: "Did Isaac Newton discover the law of gravity?", answer: "Yes" },
+  { question: "Is the Sahara Desert the largest desert in the world?", answer: "Yes" },
+  { question: "Did Albert Einstein develop the theory of relativity?", answer: "Yes" },
+  { question: "Is the capital of Canada Ottawa?", answer: "Yes" },
+  { question: "Did Vincent van Gogh cut off his own ear?", answer: "Yes" },
+  { question: "Is the Amazon River the longest river in South America?", answer: "Yes" },
+  { question: "Did Marie Curie discover radium and polonium?", answer: "Yes" },
+  { question: "Is the Taj Mahal located in India?", answer: "Yes" },
+  { question: "Did Martin Luther King Jr. deliver the 'I Have a Dream' speech?", answer: "Yes" },
+  { question: "Is Mount Everest the tallest mountain in the world?", answer: "Yes" },
+  { question: "Did Charles Darwin develop the theory of evolution?", answer: "Yes" },
+  { question: "Is the Great Barrier Reef located in Australia?", answer: "Yes" },
+  { question: "Did Julius Caesar become the first Roman Emperor?", answer: "No" },
+  { question: "Is the Mona Lisa displayed in the Louvre Museum?", answer: "Yes" },
+  { question: "Did Galileo Galilei invent the telescope?", answer: "No" },
+  { question: "Is the Pacific Ocean the largest ocean on Earth?", answer: "Yes" },
+  { question: "Did Henry Ford invent the automobile?", answer: "No" },
+  { question: "Is the Colosseum located in Athens?", answer: "No" }
+];
+
+var currentQuestionIndex = 0;
+var score = 0;
+
+var generateQuestion = function() {
+  var currentQuestion = questions[currentQuestionIndex].question;
+   textSize(20);  // Set the text size
+  textAlign(LEFT, TOP);
+  text(currentQuestion, 20, 20, width - 40, height - 40);  // Adjust the text position and dimensions,This ensures that the text is positioned 20 pixels from the left and top edges of the canvas and has a width and height that leaves a margin of 20 pixels from the right and bottom edges.
+};
+
+var checkAnswer = function(answer) {
+  var correctAnswer = questions[currentQuestionIndex].answer;
+  if (answer === correctAnswer) {
+    score++;}
+  
+  currentQuestionIndex++;
+
+  if (currentQuestionIndex === questions.length) {
+    // Display final score
+    text("Quiz completed! Your score is: " + score + "/" + questions.length, 50, 250);
+  } else {
+    // Generate the next question
+    generateQuestion();
+  }
+};  
+    
+    var Button = function(config) {
+        this.x = config.x || 0;
+        this.y = config.y || 0;
+        this.width = config.width || 165;
+        this.height = config.height || 54;
+        this.label = config.label || "Click";
+        this.onClick = config.onClick || function() {};
+    };
+    
+    Button.prototype.draw = function() {
+        fill(206, 207, 135);
+        rect(this.x, this.y, this.width, this.height, 23);
+        fill(0, 0, 0);
+        textSize(19);
+        textAlign(LEFT, TOP);
+        text(this.label, this.x+10, this.y+this.height/4);
+    };
+    
+    Button.prototype.isMouseInside = function() {
+        return mouseX > this.x &&
+               mouseX < (this.x + this.width) &&
+               mouseY > this.y &&
+               mouseY < (this.y + this.height);
+    };
+    
+    Button.prototype.handleMouseClick = function() {
+        if (this.isMouseInside()) {
+            this.onClick();
+        }
+    };
+    var Tile = function(x, y, face) {
+    this.x = x;
+    this.y = y;
+    this.size = 70;
+    this.face = face;
+    this.isFaceUp = false;
+    this.isMatch = false;
+};
+Tile.prototype.draw = function() {
+    fill(214, 247, 202);
+    strokeWeight(2);
+    if (!this.isFaceUp&& this.isUnderMouse(mouseX,mouseY))
+        {
+            fill(0, 0, 0);
+        
+         rect(this.x, this.y, this.size, this.size, 10);
+        
+    }
+    if (this.isFaceUp) {
+            image(this.face, this.x, this.y, this.size, this.size);
+        } else {
+        image(getImage("cute/ChestClosed"), this.x, this.y, this.size, this.size);
+    }
+};
+
+Tile.prototype.isUnderMouse = function(x, y) {
+    return x >= this.x && x <= this.x + this.size  &&
+        y >= this.y && y <= this.y + this.size;
+};
+var yesButton = new Button({
+  x: 5,
+  y: 180,
+  label: "Yes",
+  onClick: function() {
+    checkAnswer("Yes");
+  }
+});
+
+var noButton = new Button({
+  x: 250,
+  y: 180,
+  label: "No",
+  onClick: function() {
+    checkAnswer("No");
+  }
+});
+var startButton = new Button({
+        x: 83,
+        y: 350,
+        label: "Start Game !",
+        onClick: function() {
+          currentScene=3;
+            
+           
+        },
+  
+    });
+    var Directions =new Button ({
+        x:112,
+        y:262,
+        label: "Directions",
+        onClick: function() {
+            currentScene=1;
+         
+        },
+    });
+    var character= new Button({
+        x:200,
+        y:300,
+        label: "Pick  Character",
+        onClick: function() {
+            currentScene=2;
+          
+        },
+    });
+// Global config
+var NUM_COLS = 2;
+var NUM_ROWS = 2;
+
+// Declare an array of all possible faces
+var faces = [
+
+    getImage("avatars/mr-pink-orange"),
+    getImage("avatars/piceratops-tree"),
+    getImage("avatars/purple-pi"),
+    getImage("avatars/robot_female_1"),
+    
+        ];
+
+
+var possibleFaces = faces.slice(0);
+var selected = [];
+for (var i = 0; i < (NUM_COLS * NUM_ROWS) / 1; i++) {
+    // Randomly pick one from the array of remaining faces
+    var randomInd = floor(random(possibleFaces.length));
+    var face = possibleFaces[randomInd];
+    // Push twice onto array
+    selected.push(face);
+    
+    // Remove from array
+    possibleFaces.splice(randomInd,1);
+}
+
+// Now shuffle the elements of that array
+var shuffleArray = function(array) {
+    var counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        var ind = Math.floor(Math.random() * counter);
+        // Decrease counter by 1
+        counter--;
+        // And swap the last element with it
+        var temp = array[counter];
+        array[counter] = array[ind];
+        array[ind] = temp;
+    }
+};
+shuffleArray(selected);
+
+// Create the tiles
+var tiles = [];
+for (var i = 0; i < NUM_COLS; i++) {
+    for (var j = 0; j < NUM_ROWS; j++) {
+        var tileX = i * 75 + 10;
+        var tileY = j * 75+ 40;
+        var tileFace = selected.pop();
+        tiles.push(new Tile(tileX, tileY, tileFace));
+    }
+}
+
+
+
+var numTries = 0;
+
+var flippedTiles = [];
+var delayStartFC = null;
+var isTurning = false;// Define the Tile constructor
+var Tile = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = 100;
+};
+
+// Define the draw function for Tile
+Tile.prototype.draw = function() {
+    fill(139, 0, 0);
+    strokeWeight(-1);
+    rect(this.x, this.y, this.size, this.size, 100);
+};
+
+// Create instances of Tile
+var topLeftTile = new Tile(50, 50);
+var topRightTile = new Tile(250, 50);
+var bottomLeftTile = new Tile(50, 250);
+var bottomRightTile = new Tile(250, 250);
+
+// Define the Button constructor
+var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 70;
+    this.height = config.height || 70;
+    this.label = config.label || "Click";
+};
+
+// Define the draw function for Button
+Button.prototype.draw = function() {
+    fill(2, 2, 2);
+    rect(this.x, this.y, this.width, this.height, 75);
+    fill(139, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x + 10, this.y + this.height / 4);
+};
+
+// Define the mouseClicked function for Button
+Button.prototype.mouseClicked = function() {
+    isTurning = !isTurning;
+    this.label = isTurning ? "Stop!" : "Start!";
+};
+
+
+// Create an instance of Button
+var btn1 = new Button({
+    x: 165,
+    y: 165,
+    label: "Start!"
+});
+// Define the arrow shape
+var arrowWidth = 29;
+var arrowLength = 50;
+var arrowHeadSize = 18;
+
+// Define the initial angle and angular velocity
+var angle = 0;
+var angularVelocity = 10;
+
+// Define the drawArrow function
+var drawArrow = function(x, y, angle) {
+    pushMatrix();
+    translate(x, y);
+    rotate(angle);
+    noStroke();
+    fill(255, 0, 0);
+    line(-arrowWidth / 2, arrowWidth / 2, 0, -arrowLength);
+    fill(139, 0, 0);
+    triangle(
+        -arrowHeadSize / 2,
+        -arrowLength,
+        arrowHeadSize / 2,
+        -arrowLength,
+        0,
+        -arrowLength - arrowHeadSize
+    );
+    popMatrix();
+};
+Button.prototype.mouseClicked = function() {
+    isTurning = !isTurning;
+    this.label = isTurning ? "Stop!" : "Start!";
+    if (isTurning) {
+        angularVelocity = 10;
+    } else {
+        angularVelocity = 0;
+    }
+};
+
+mouseClicked = function() {
+   
+    for (var i = 0; i < tiles.length; i++) {
+            var tile = tiles[i];
+            if (tile.isUnderMouse(mouseX, mouseY)) {
+                if (flippedTiles.length < 4 && !tile.isFaceUp) {
+                    tile.isFaceUp = true;
+                    flippedTiles.push(tile);
+                    if (flippedTiles.length === 4) {
+                    }
+                }
+            }
+        }
+ 
+
+        playSound(getSound("rpg/metal-chime"));
+yesButton.handleMouseClick();
+  noButton.handleMouseClick();
+        startButton.handleMouseClick();
+        character.handleMouseClick();
+        Directions.handleMouseClick();
+        if (
+        mouseX > btn1.x &&
+        mouseX < btn1.x + btn1.width &&
+        mouseY > btn1.y &&
+        mouseY < btn1.y + btn1.height
+    ) {
+        btn1.mouseClicked();
+    }
+   
+       
+};
+var splashScreen=function()
+    {
+        
+        background(3, 3, 3);
+           
+           textSize(18);
+           fill(245, 233, 233);
+           text("Yageilys & Bitanya",138,350);
+         fill(235, 103, 103);
+        textSize(30);
+        textFont(createFont("fantasy"), 38);
+        text(" The Game" ,91,1);
+        
+        image(getImage("cute/CharacterBoy"), 96, 52);
+        image(getImage("cute/CharacterPinkGirl"), 199, 50);
+        
+        
+        Directions.draw();
+       
+        
+    };
+    var Playdirections= function()
+{
+    background(206, 155, 209);
+    
+    textSize(5);
+    textFont(createFont("fantasy"), 25);
+
+fill(255, 0, 0);
+
+textAlign(CENTER,CENTER);
+    
+    fill(5, 5, 5);
+    text("Directions To The game ",150,44);
+ 
+      textFont(createFont("Lato"), 12);
+
+    text(" Are you ready to expand your knowledge and learn new things?\n\n The first step to the game is to pick any 4 characters of your choice\n The second step is to be prepared to answer our challenging questions,\n which are general questions such as math and  history question.\nYou Can earn points by answering opponents question after their time\n is up to answer the question. However after 3 minutes of playing the game\n the player with the most point will be the winner\n Are you ready for the Challenge?",199,186);
+   image(getImage("cute/CharacterBoy"), 0, 226, 73, 200);
+   character.draw();
+};
+var playCharecter=function()
+    {
+    
+        background(3, 3, 3);
+        fill(230, 191, 191);
+        
+        text("Pick A Character",100,20);
+        if (delayStartFC && (frameCount - delayStartFC) > 30) {
+        for (var i = 0; i < tiles.length; i++) {
+            var tile = tiles[i];
+            
+        }
+        flippedTiles = [];
+        delayStartFC = null;
+        noLoop();
+    }
+    
+    for (var i = 0; i < tiles.length; i++) {
+        tiles[i].draw();
+    }
+    
+    if(flippedTiles.length===4){
+        
+        startButton.draw();
+        
+}
+    };
+ 
+var drawfaces = function(n) {
+ image(getImage("avatars/piceratops-tree"), 271,250,50, 80);
+        image(getImage("avatars/mr-pink-orange"),72,257,50, 80);
+       image(getImage("avatars/purple-pi"), 264, 54,50,80); 
+       image(getImage("avatars/robot_female_1"), 63, 50,50,80); 
+       
+ 
+};
+
+var Playgame = function() {
+  background(10, 9, 10);
+  btn1.draw();
+
+  // Check if the button has been clicked and update the angle accordingly
+  if (isTurning) {
+    angle += angularVelocity;
+  }
+
+  drawArrow(width / 2, height / 2, angle);
+
+  topLeftTile.draw();
+  topRightTile.draw();
+  bottomLeftTile.draw();
+  bottomRightTile.draw();
+  drawfaces();
+ 
+  generateQuestion();
+  yesButton.draw();
+  noButton.draw();
+
+};
+
+var draw = function() {
+  if (currentScene === 0) {
+    splashScreen();
+  }
+  else if (currentScene === 1) {
+    Playdirections();
+  }
+  if (currentScene === 2) {
+    playCharecter();
+  }
+  if (currentScene === 3) {
+    Playgame();
+  }
+};
+ 
+    
+     
+    
+   
+
+
+
+ 
